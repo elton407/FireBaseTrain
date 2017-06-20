@@ -1,5 +1,12 @@
 console.log("hello");
 
+ setInterval(function(){
+    $('#cTime').html(moment().format('hh:mm:ss A'))
+  }, 1000);
+
+	var currentTime = moment();
+	console.log("CURRENT TIME:" + moment(currentTime).format("HH:mm"));
+
 var config = {
     apiKey: "AIzaSyAc43A1k92pI7X6hZufsi6cRiVLxBGJMwA",
     authDomain: "train-scheduler-739b5.firebaseapp.com",
@@ -54,10 +61,35 @@ var config = {
 
   	var trainName = childSnapshot.val().name;
   	var trainDestination = childSnapshot.val().destination;
-  	var trainTime = childSnapshot.val().time;
+  	var trainTime = childSnapshot.val().time ;
   	var trainFrequency = childSnapshot.val().frequency;
 
-  	$("#tBody").prepend("<tr><td>"+ trainName +"</td><td>"+ trainDestination +"</td><td>" + trainTime + "</td><td>" + trainFrequency + "</td></tr>");
+  	
+
+	var firstTimeConverted = moment(trainTime, "hh:mm").subtract(1, "years");
+	console.log(firstTimeConverted);
+
+	// Current time
+	var currentTime = moment();
+	console.log("CURRENT TIME:" + moment(currentTime).format("HH:mm A"));
+
+	// Difference between times
+	var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+	console.log("DIFFERENCE IN TIME: " + diffTime);
+
+	// Time apart (remainder)
+	var tRemainder = diffTime % trainFrequency;
+	console.log(tRemainder);
+
+	// Mins until train
+	var tMinutesTillTrain = trainFrequency - tRemainder;
+	console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+	// Next train
+	var nextTrain = moment().add(tMinutesTillTrain, "minutes").format("hh:mm A");
+	console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm A"));
+
+  	$("#tBody").prepend("<tr><td>"+ trainName +"</td><td>"+ trainDestination +"</td><td>" + trainFrequency + "</td><td>" + nextTrain +"</td><td>"+tMinutesTillTrain+"</td></tr>");
 
 
   	console.log(trainName);
